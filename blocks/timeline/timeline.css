@@ -1,46 +1,125 @@
+/* styles/blocks/timeline/timeline.css */
+
+/* Main container for the timeline block */
 .timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    padding: 2rem 1rem;
-    max-width: 1200px;
-    margin: auto;
+    position: relative;
+    margin: 0 auto;
+    padding: 40px 0;
+    max-width: 1000px;
 }
 
-.timeline .timeline-row {
+/* The central vertical line of the timeline */
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    background-color: #e17b65; /* A color inspired by your screenshot */
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -1.5px;
+}
+
+/* A single row/event in the timeline */
+.timeline > div.timeline-item {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
     justify-content: space-between;
-    gap: 2rem;
+    align-items: center;
+    margin-bottom: 40px;
+    position: relative;
 }
 
-.timeline .timeline-row:nth-child(even) {
+/* The dot on the timeline for each item */
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 4px solid #e17b65;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+/* The two columns within a timeline item: content and image */
+.timeline-item > div {
+    width: 45%; /* Each column takes up 45% of the width */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Reverse the order for even-numbered timeline items */
+.timeline-item:nth-child(even) {
     flex-direction: row-reverse;
 }
 
-.timeline .timeline-text {
-    flex: 1 1 45%;
-    font-family: Arial, sans-serif;
+/* Style for the text content cell */
+.timeline-item .timeline-content {
+    text-align: left;
 }
 
-.timeline .timeline-text h3 {
-    margin: 0;
-    font-size: 1.2rem;
+/* Style for the year/date */
+.timeline-content h3 {
+    margin-top: 0;
+    font-size: 1.5em;
     color: #333;
 }
 
-.timeline .timeline-text p {
-    margin-top: 0.5rem;
-    line-height: 1.5;
+/* Style for the description */
+.timeline-content p {
+    margin-bottom: 0;
+    line-height: 1.6;
 }
 
-.timeline .timeline-image {
-    flex: 1 1 45%;
+/* Style for the image cell */
+.timeline-item .timeline-image {
+    padding: 0; /* Remove padding if the image fills the container */
 }
 
-.timeline .timeline-image img {
+.timeline-image img {
     width: 100%;
+    height: auto;
+    display: block;
     border-radius: 8px;
-    object-fit: cover;
+}
+
+/* Responsive styles for screens smaller than 768px (tablets and phones) */
+@media screen and (max-width: 768px) {
+    /* Move the timeline line to the left */
+    .timeline::after {
+        left: 31px;
+    }
+
+    /* Make each item a single column layout */
+    .timeline > div.timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Ensure all items flow the same way */
+    .timeline-item:nth-child(even) {
+        flex-direction: column;
+    }
+
+    /* Make the content and image containers full width */
+    .timeline-item > div {
+        width: 100%;
+        margin-left: 60px; /* Space for the timeline line */
+        margin-bottom: 20px;
+    }
+
+    .timeline-item > div:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Position the dot on the timeline line */
+    .timeline-item::after {
+        left: 31px;
+        top: 25px; /* Adjust vertical position */
+    }
 }
