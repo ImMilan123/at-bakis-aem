@@ -13,8 +13,6 @@ export default function decorate(block) {
     // Add a class to each row to identify it as a timeline item
     row.classList.add('timeline-item');
 
-    // Each row from the document becomes a div, and each cell within that row is another div.
-    // We expect two cells: one for content, one for the image.
     const cells = [...row.querySelectorAll(':scope > div')];
 
     if (cells.length !== 2) {
@@ -22,19 +20,34 @@ export default function decorate(block) {
       return;
     }
 
-    const contentCell = cells[0];
-    const imageCell = cells[1];
+    // Automatically detect which cell contains the image vs. the text content.
+    // This makes authoring more flexible.
+    const imageCell = cells.find((cell) => cell.querySelector('picture'));
+    const contentCell = cells.find((cell) => !cell.querySelector('picture'));
 
-    contentCell.classList.add('timeline-content');
-    imageCell.classList.add('timeline-image');
+    // If detection fails for any reason, fall back to the original column order.
+    if (!imageCell || !contentCell) {
+      cells[0].classList.add('timeline-content');
+      cells[1].classList.add('timeline-image');
+    } else {
+      contentCell.classList.add('timeline-content');
+      imageCell.classList.add('timeline-image');
+
+      // Enforce a consistent DOM order (content first, then image)
+      // This ensures the CSS for the zigzag effect works reliably.
+      row.innerHTML = '';
+      row.append(contentCell, imageCell);
+    }
+
+    // Find the content cell again after potential reordering
+    const finalContentCell = row.querySelector('.timeline-content');
 
     // To style the year/date differently, we'll find the first 'strong' element
     // which we assume is the year, and wrap it in an H3 tag.
-    const yearElement = contentCell.querySelector('strong');
+    const yearElement = finalContentCell.querySelector('strong');
     if (yearElement) {
-      const year = yearElement.textContent;
       const h3 = document.createElement('h3');
-      h3.textContent = year;
+      h3.textContent = yearElement.textContent;
 
       // If the year is inside a paragraph, replace the paragraph with the new H3.
       // Otherwise, prepend the H3 to the content cell.
@@ -42,7 +55,7 @@ export default function decorate(block) {
         yearElement.parentElement.replaceWith(h3);
       } else {
         yearElement.remove();
-        contentCell.prepend(h3);
+        finalContentCell.prepend(h3);
       }
     }
   });
