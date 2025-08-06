@@ -1,19 +1,21 @@
+/* FILE: blocks/timeline/timeline.js */
+
 export default function decorate(block) {
   const wrapper = document.createElement('div');
   wrapper.className = 'timeline-wrapper';
 
-  [...block.children].forEach((row) => {
+  [...block.children].forEach((row, index) => {
     const cols = row.children;
-    if (cols.length !== 2) return; // Skip malformed rows
+    if (cols.length !== 2) return;
 
     const imageCell = cols[0].querySelector('img') ? cols[0] : cols[1];
     const textCell = cols[0].querySelector('img') ? cols[1] : cols[0];
     const image = imageCell.querySelector('img');
-
     if (!image) return;
 
     const item = document.createElement('div');
-    item.className = `timeline-item ${imageCell === cols[0] ? 'left' : 'right'}`;
+    const isEven = index % 2 === 0;
+    item.className = `timeline-item ${isEven ? 'left' : 'right'}`;
 
     const content = document.createElement('div');
     content.className = 'timeline-content';
@@ -31,9 +33,11 @@ export default function decorate(block) {
       textWrapper.appendChild(node.cloneNode(true));
     });
 
-    content.appendChild(imageWrapper);
-    content.appendChild(connector);
-    content.appendChild(textWrapper);
+    if (isEven) {
+      content.append(imageWrapper, connector, textWrapper);
+    } else {
+      content.append(textWrapper, connector, imageWrapper);
+    }
 
     item.appendChild(content);
     wrapper.appendChild(item);
