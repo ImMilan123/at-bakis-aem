@@ -67,8 +67,16 @@
 
 @media (max-width: 768px) {
     .timeline-wrapper::before {
-        display: none;
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 2px; /* thinner line */
+        background-color: #000; /* black line */
+        transform: translateX(-50%);
     }
+
 
     .timeline-item {
         flex-direction: column !important;
