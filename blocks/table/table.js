@@ -28,7 +28,7 @@ export default async function decorate(block) {
       const align = col.getAttribute('data-align');
       const valign = col.getAttribute('data-valign');
       if (align) cell.style.textAlign = align;
-      if (valign) cell.style.verticalAlign = valign;
+      if (valign) cell.style.verfticalAlign = valign;
       cell.innerHTML = col.innerHTML;
       row.append(cell);
     });
