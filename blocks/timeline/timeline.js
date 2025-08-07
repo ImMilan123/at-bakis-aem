@@ -3,7 +3,6 @@
 export default function decorate(block) {
   const wrapper = document.createElement('div');
   wrapper.className = 'timeline-wrapper';
-  console.log([...block.children]);
 
   [...block.children].forEach((row, index) => {
     const cols = row.children;
