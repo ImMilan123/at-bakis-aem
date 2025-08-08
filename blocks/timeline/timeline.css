@@ -14,6 +14,9 @@
     width: 100%;
 }
 
+.timeline-wrapper {margin-left: 0;
+    margin-right: 0;}
+
 /* center vertical divider */
 .block.timeline .axis {
     position: absolute;
