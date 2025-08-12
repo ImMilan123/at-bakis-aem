@@ -1,152 +1,147 @@
-/* Timeline block */
-.block.timeline {
-    --axis-width: 2px;
-    --line-color: #d0d5db; /* neutral-300 */
-    --row-gap: 72px;
-    --media-width: clamp(240px, 30vw, 320px); /* standardized */
-    --media-aspect: 4/3;
+/* =========================
+   Timeline block (Franklin)
+   ========================= */
 
-    /* defaults so stylelint doesn't complain about unresolved vars */
-    --connector: 0px;
-    --penetration: 0px;
+.timeline {
+    --tl-max-media: 420px;
+    --tl-aspect: 4 / 3;
+    --tl-col-gap: clamp(16px, 4vw, 40px);
+    --tl-row-gap: clamp(28px, 5vw, 72px);
+    --tl-connector: 1px;
+    --tl-connector-color: #d6d6d6;
+    --tl-spine: 2px;
+    --tl-spine-color: #e4e4e4;
+}
 
+.timeline.pt-enhanced {
     position: relative;
     width: 100%;
 }
 
-.timeline-wrapper {margin-left: 0;
-    margin-right: 0;}
-
-/* center vertical divider */
-.block.timeline .axis {
+/* Center vertical spine */
+.timeline.has-spine::before {
+    content: "";
     position: absolute;
     top: 0;
     bottom: 0;
     left: 50%;
-    width: var(--axis-width);
-    background: var(--line-color);
     transform: translateX(-50%);
+    width: var(--tl-spine);
+    background: var(--tl-spine-color);
+    pointer-events: none;
 }
 
-/* each row */
-.block.timeline .timeline-row {
+/* =========================
+   Layout
+   ========================= */
+
+.timeline .timeline-item {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    align-items: center;            /* centers text vertically to image */
-    column-gap: 72px;
-    margin: var(--row-gap) 0;
+    gap: var(--tl-row-gap) var(--tl-col-gap);
+    align-items: center;
+    padding-block: 12px; /* respects default section padding */
+    position: relative;  /* for per-row connector */
+}
+
+/* Horizontal connector through row center */
+.timeline .timeline-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: var(--tl-connector);
+    background: var(--tl-connector-color);
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* =========================
+   Base cell styling (keep BEFORE side-specific rules)
+   ========================= */
+
+.timeline .media {
     position: relative;
+    z-index: 1; /* above connector line */
 }
 
-/* base pieces first (prevents no-descending-specificity) */
-.block.timeline .media {
+.timeline .content {
     position: relative;
+    z-index: 1;
+    max-width: 60ch;
 }
 
-.block.timeline .content {
-    max-width: 44ch;
-}
+/* =========================
+   Side-specific grid placement
+   ========================= */
 
-.block.timeline .content > * + * {
-    margin-top: 0.45rem;
-}
+.timeline .timeline-item.left .media   { grid-column: 1; }
+.timeline .timeline-item.left .content { grid-column: 2; }
+.timeline .timeline-item.right .content { grid-column: 1; }
+.timeline .timeline-item.right .media  { grid-column: 2; }
 
-/* side-specific alignment */
-.block.timeline .timeline-row.left .media {
-    justify-self: end;
-}
+/* =========================
+   Media
+   ========================= */
 
-.block.timeline .timeline-row.left .content {
-    justify-self: start;
-}
-
-.block.timeline .timeline-row.right .content {
-    order: 1;
-    justify-self: end;
-}
-
-.block.timeline .timeline-row.right .media {
-    order: 2;
-    justify-self: start;
-}
-
-/* standardized image boxes */
-.block.timeline .media picture,
-.block.timeline .media img {
-    display: block;
-    width: var(--media-width);
-    aspect-ratio: var(--media-aspect);
-    height: auto;
-}
-
-.block.timeline .media img {
+.timeline .media .media-frame {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    max-width: var(--tl-max-media);
+    aspect-ratio: var(--tl-aspect);
+    overflow: hidden;
     border-radius: 6px;
 }
 
-/* connector line from image center into opposite text */
-.block.timeline .timeline-row .media::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    height: 2px;
-    background: var(--line-color);
-    transform: translateY(-50%);
+.timeline .media picture,
+.timeline .media img,
+.timeline .media video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-/* use a fallback so stylelint doesn't warn about custom props */
-.block.timeline .timeline-row.left .media::after {
-    left: 100%;
-    width: var(--connector, 0px);
+/* =========================
+   Content
+   ========================= */
+
+.timeline .content :where(h1, h2, h3, h4, strong) {
+    display: block;
+    margin: 0 0 6px;
 }
 
-.block.timeline .timeline-row.right .media::after {
-    right: 100%;
-    width: var(--connector, 0px);
+.timeline .content p {
+    margin: 0.2em 0 0;
+    line-height: 1.45;
 }
 
-/* STACK MODE (JS toggles .stack when content can't fit) */
-.block.timeline.stack .axis {
-    display: none;
-}
+/* =========================
+   Responsive
+   ========================= */
 
-.block.timeline.stack .timeline-row {
-    grid-template-columns: 1fr;
-    row-gap: 16px;
-    margin: 48px 0;
-}
-
-.block.timeline.stack .timeline-row .media::after {
-    display: none;
-}
-
-.block.timeline.stack .timeline-row .media,
-.block.timeline.stack .timeline-row .content {
-    justify-self: center;
-    max-width: min(640px, 100%);
-}
-
-/* small screens: also stack as a fallback */
 @media (width <= 900px) {
-    .block.timeline .axis {
-        display: none;
-    }
+    .timeline.has-spine::before { display: none; }
 
-    .block.timeline .timeline-row {
+    .timeline .timeline-item {
         grid-template-columns: 1fr;
-        row-gap: 16px;
-        margin: 48px 0;
+        gap: 12px;
+        padding-block: 10px;
     }
 
-    .block.timeline .timeline-row .media::after {
-        display: none;
-    }
+    /* Stack: image first, then text */
+    .timeline .timeline-item .media   { order: 1; }
+    .timeline .timeline-item .content { order: 2; }
 
-    .block.timeline .timeline-row .media,
-    .block.timeline .timeline-row .content {
-        justify-self: center;
-        max-width: min(640px, 100%);
+    /* Shorten the long connector on mobile */
+    .timeline .timeline-item::after {
+        left: 8%;
+        right: 8%;
+        opacity: 0.5;
     }
+}
+
+@media (width <= 560px) {
+    .timeline .timeline-item::after { display: none; }
 }
